@@ -3,6 +3,8 @@ package br.com.forumexample.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,12 +45,14 @@ public class TopicosController {
 	}
 	/*para pegar o parametro no corpo da requisição*/
 	@PostMapping         
-	public ResponseEntity<TopicoDto> cadastrar(@RequestBody TopicoForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);/*criar um objeto topico, pois estamos recebendo um topicoForm*/
 		topicoRepository.save(topico);
 		
 		//alem de devolver o codigo 201(recurso created), precisa de um cabecalho http com location,
 		// e a representacao do recurso
+		
+		/*utilizamos o uriBuilder para criar um objeto uri*/
 		
 		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicoDto(topico));
